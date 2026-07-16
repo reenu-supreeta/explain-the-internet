@@ -15,3 +15,24 @@ class ExplainResponse(BaseModel):
 
     explanation: str
     reading_level: str
+
+
+class PrerequisiteConcept(BaseModel):
+    """One ordered, interactive step in a learner's preparation path."""
+
+    id: str = Field(..., description="Stable identifier for UI state and progress.")
+    title: str
+    description: str
+    position: int = Field(..., ge=1, description="One-based order in the path.")
+    depends_on: list[str] = Field(
+        default_factory=list,
+        description="IDs of concepts that should be learned first.",
+    )
+
+
+class LearningPathResponse(BaseModel):
+    """Structured prerequisites that a frontend can render as a learning path."""
+
+    topic: str
+    reading_level: str
+    concepts: list[PrerequisiteConcept]

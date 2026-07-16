@@ -4,6 +4,7 @@ import os
 
 from openai import AsyncOpenAI
 
+from models import PrerequisiteConcept
 
 DEFAULT_MODEL = "gpt-4.1-mini"
 
@@ -56,6 +57,43 @@ async def generate_prerequisites(text: str, reading_level: str) -> str:
     return await generate_learning_content(
         text, reading_level, "List the key ideas to know before learning"
     )
+
+
+async def generate_prerequisite_concepts(
+    text: str, reading_level: str
+) -> list[PrerequisiteConcept]:
+    """Turn prerequisite guidance into ordered concepts for a learning-path UI."""
+    guidance = await generate_prerequisites(text, reading_level)
+    descriptions = _prerequisite_descriptions(guidance)
+    concept_ids = ["key-terms", "cause-and-effect", "central-idea"]
+    titles = ["Key terms", "Cause and effect", "Central idea"]
+
+    return [
+        PrerequisiteConcept(
+            id=concept_id,
+            title=titles[index],
+            description=descriptions[index],
+            position=index + 1,
+            depends_on=concept_ids[:index],
+        )
+        for index, concept_id in enumerate(concept_ids)
+    ]
+
+
+def _prerequisite_descriptions(guidance: str) -> list[str]:
+    """Extract up to three list items while keeping a safe UI-friendly fallback."""
+    items = []
+    for line in guidance.splitlines():
+        cleaned = line.strip().lstrip("0123456789. -")
+        if cleaned:
+            items.append(cleaned)
+
+    defaults = [
+        "Learn the basic meaning of the important words.",
+        "Understand the cause-and-effect relationships in the text.",
+        "Identify the main idea before moving to the details.",
+    ]
+    return (items + defaults)[:3]
 
 
 def _placeholder_content(text: str, reading_level: str, task: str) -> str:

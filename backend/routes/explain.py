@@ -2,12 +2,12 @@
 
 from fastapi import APIRouter
 
-from models import ExplainRequest, ExplainResponse
+from models import ExplainRequest, ExplainResponse, LearningPathResponse
 from services.gpt_service import (
     generate_eli5,
     generate_examples,
     generate_explanation,
-    generate_prerequisites,
+    generate_prerequisite_concepts,
     generate_quiz,
 )
 
@@ -52,10 +52,13 @@ async def create_examples(request: ExplainRequest) -> ExplainResponse:
     )
 
 
-@router.post("/prerequisites", response_model=ExplainResponse)
-async def list_prerequisites(request: ExplainRequest) -> ExplainResponse:
+@router.post("/prerequisites", response_model=LearningPathResponse)
+async def list_prerequisites(request: ExplainRequest) -> LearningPathResponse:
     """Identify useful background knowledge for selected text."""
-    return ExplainResponse(
-        explanation=await generate_prerequisites(request.text, request.reading_level),
+    return LearningPathResponse(
+        topic=request.text,
         reading_level=request.reading_level,
+        concepts=await generate_prerequisite_concepts(
+            request.text, request.reading_level
+        ),
     )
