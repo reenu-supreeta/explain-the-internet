@@ -1,5 +1,5 @@
 # explain-the-internet
-# Prism 🌈
+
 
 > **An AI-powered learning layer for the web.**
 
