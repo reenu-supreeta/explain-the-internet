@@ -13,6 +13,15 @@
         <p>Understand what you read.</p>
       </header>
 
+      <nav id="breadcrumb" class="breadcrumb" aria-label="Learning topic">
+        <span id="breadcrumb-original">Original Topic</span>
+        <span id="breadcrumb-separator" hidden aria-hidden="true">&gt;</span>
+        <span id="breadcrumb-current" hidden></span>
+        <button id="back-to-original" class="back-button" type="button" hidden>
+          Back to Original Topic
+        </button>
+      </nav>
+
       <section aria-labelledby="selected-text-heading">
         <h2 id="selected-text-heading">Selected text</h2>
         <p id="selected-text" class="card" aria-live="polite">
@@ -20,11 +29,22 @@
         </p>
       </section>
 
-      <section aria-labelledby="explanation-heading">
-        <h2 id="explanation-heading">Explanation</h2>
-        <p id="explanation" class="card" aria-live="polite">
-          Your explanation will appear here.
-        </p>
+      <section class="learning-actions" aria-label="Learning actions">
+        <div class="tab-list" role="tablist" aria-label="Prism actions">
+          <button id="tab-explain" class="tab" role="tab" aria-selected="true" aria-controls="result-panel" data-action="explain">Explain</button>
+          <button id="tab-eli5" class="tab" role="tab" aria-selected="false" aria-controls="result-panel" data-action="eli5">ELI5</button>
+          <button id="tab-quiz" class="tab" role="tab" aria-selected="false" aria-controls="result-panel" data-action="quiz">Quiz</button>
+          <button id="tab-examples" class="tab" role="tab" aria-selected="false" aria-controls="result-panel" data-action="examples">Examples</button>
+          <button id="tab-learning-path" class="tab" role="tab" aria-selected="false" aria-controls="result-panel" data-action="learning-path">Learning Path</button>
+        </div>
+
+        <div id="result-panel" class="card result-card" role="tabpanel" aria-live="polite" aria-busy="false">
+          <div id="result">Choose an action to start learning.</div>
+          <div id="loading" class="loading" hidden>
+            <span class="spinner" aria-hidden="true"></span>
+            Generating explanation...
+          </div>
+        </div>
       </section>
     </main>
 

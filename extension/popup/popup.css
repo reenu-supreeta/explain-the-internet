@@ -30,6 +30,40 @@ header p {
   font-size: 14px;
 }
 
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  color: #5d6678;
+  font-size: 12px;
+}
+
+#breadcrumb-original,
+#breadcrumb-current {
+  max-width: 145px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.back-button {
+  padding: 4px 6px;
+  border: 0;
+  border-radius: 4px;
+  color: #4f46e5;
+  background: transparent;
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.back-button:focus-visible {
+  outline: 2px solid #818cf8;
+  outline-offset: 2px;
+}
+
 section {
   margin-top: 18px;
 }
@@ -50,4 +84,126 @@ h2 {
   line-height: 1.45;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.tab-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.tab {
+  padding: 6px 9px;
+  border: 1px solid #dbe0ec;
+  border-radius: 6px;
+  color: #39445b;
+  background: #fff;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.tab[aria-selected="true"] {
+  border-color: #4f46e5;
+  color: #fff;
+  background: #4f46e5;
+}
+
+.tab:focus-visible {
+  outline: 2px solid #818cf8;
+  outline-offset: 2px;
+}
+
+.tab:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.result-card {
+  min-height: 56px;
+  max-height: 200px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #5d6678;
+}
+
+/* Be explicit so the spinner never overrides the HTML hidden attribute. */
+.loading[hidden] {
+  display: none;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #dbe0ec;
+  border-top-color: #4f46e5;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.learning-path {
+  margin: 0;
+  padding-left: 22px;
+}
+
+.learning-path li + li {
+  margin-top: 10px;
+}
+
+.concept-card {
+  width: 100%;
+  padding: 9px;
+  border: 1px solid #dbe0ec;
+  border-radius: 7px;
+  color: inherit;
+  background: #f7f8fc;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.concept-card:hover {
+  border-color: #818cf8;
+  background: #eef0ff;
+}
+
+.concept-card:focus-visible {
+  outline: 2px solid #818cf8;
+  outline-offset: 2px;
+}
+
+.concept-description {
+  display: block;
+  margin-top: 2px;
+  color: #5d6678;
+}
+
+.lesson-title {
+  margin: 0 0 10px;
+  color: #4f46e5;
+  font-size: 16px;
+}
+
+.lesson-section + .lesson-section {
+  margin-top: 12px;
+}
+
+.lesson-heading {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 12px;
+}
+
+.lesson-copy {
+  color: #39445b;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
