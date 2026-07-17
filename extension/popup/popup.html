@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Prism</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="popup">
+      <header>
+        <h1>Prism</h1>
+        <p>Understand what you read.</p>
+      </header>
+
+      <section aria-labelledby="selected-text-heading">
+        <h2 id="selected-text-heading">Selected text</h2>
+        <p id="selected-text" class="card" aria-live="polite">
+          Select text on a page, then choose &ldquo;Explain with Prism&rdquo;.
+        </p>
+      </section>
+
+      <section aria-labelledby="explanation-heading">
+        <h2 id="explanation-heading">Explanation</h2>
+        <p id="explanation" class="card" aria-live="polite">
+          Your explanation will appear here.
+        </p>
+      </section>
+    </main>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

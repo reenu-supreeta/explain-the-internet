@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Prism",
+  "description": "Save selected text and prepare it for a clear Prism explanation.",
+  "version": "0.1.0",
+  "permissions": [
+    "activeTab",
+    "contextMenus",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:8000/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Prism",
+    "default_popup": "popup/popup.html"
+  }
+}
