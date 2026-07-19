@@ -13,7 +13,7 @@
         <p>Understand what you read.</p>
       </header>
 
-      <nav id="breadcrumb" class="breadcrumb" aria-label="Learning topic">
+      <nav id="breadcrumb" class="breadcrumb" aria-label="Learning topic" hidden>
         <span id="breadcrumb-original">Original Topic</span>
         <span id="breadcrumb-separator" hidden aria-hidden="true">&gt;</span>
         <span id="breadcrumb-current" hidden></span>
@@ -25,7 +25,11 @@
       <section aria-labelledby="selected-text-heading">
         <h2 id="selected-text-heading">Selected text</h2>
         <p id="selected-text" class="card" aria-live="polite">
-          Select text on a page, then choose &ldquo;Explain with Prism&rdquo;.
+          <strong class="empty-state-title">Curious about something?</strong>
+          <span class="empty-state-copy">
+            Highlight any text on a webpage, right-click, and choose
+            &lsquo;Explain with Prism&rsquo; to start learning.
+          </span>
         </p>
       </section>
 
@@ -42,7 +46,7 @@
           <div id="result">Choose an action to start learning.</div>
           <div id="loading" class="loading" hidden>
             <span class="spinner" aria-hidden="true"></span>
-            Generating explanation...
+            <span id="loading-text">Explaining...</span>
           </div>
         </div>
       </section>

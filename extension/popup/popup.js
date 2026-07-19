@@ -11,12 +11,21 @@ const ACTIONS = {
   examples: { endpoint: "/examples" },
   "learning-path": { endpoint: "/prerequisites" },
 };
+const LOADING_MESSAGES = {
+  explain: "Explaining...",
+  eli5: "Simplifying...",
+  quiz: "Generating quiz...",
+  examples: "Finding examples...",
+  "learning-path": "Building learning path...",
+};
 
 const selectedTextElement = document.querySelector("#selected-text");
 const resultElement = document.querySelector("#result");
 const resultPanel = document.querySelector("#result-panel");
 const loadingElement = document.querySelector("#loading");
+const loadingTextElement = document.querySelector("#loading-text");
 const tabs = [...document.querySelectorAll("[role=tab]")];
+const breadcrumb = document.querySelector("#breadcrumb");
 const breadcrumbOriginal = document.querySelector("#breadcrumb-original");
 const breadcrumbCurrent = document.querySelector("#breadcrumb-current");
 const breadcrumbSeparator = document.querySelector("#breadcrumb-separator");
@@ -30,13 +39,25 @@ let pendingRequestCount = 0;
 const responseCache = new Map();
 const inFlightRequests = new Map();
 
+class BackendRequestError extends Error {
+  constructor(status) {
+    super("Prism backend request failed.");
+    this.status = status;
+  }
+}
+
 function setLoading(isLoading) {
   loadingElement.hidden = !isLoading;
   resultPanel.setAttribute("aria-busy", String(isLoading));
 }
 
-function beginRequest() {
+function updateLoadingText(action) {
+  loadingTextElement.textContent = LOADING_MESSAGES[action];
+}
+
+function beginRequest(action = activeAction) {
   pendingRequestCount += 1;
+  updateLoadingText(action);
   setLoading(true);
 }
 
@@ -56,6 +77,9 @@ function updateTabs() {
 
 function updateBreadcrumb() {
   const hasPrerequisite = selectedPrerequisite !== null;
+  // The original topic already appears in the Selected Text card. Reveal this
+  // navigation only when it adds context for a selected prerequisite.
+  breadcrumb.hidden = !hasPrerequisite;
   breadcrumbOriginal.textContent = originalSelectedText || "Original Topic";
   breadcrumbOriginal.title = originalSelectedText;
   breadcrumbCurrent.hidden = !hasPrerequisite;
@@ -68,29 +92,160 @@ function updateBreadcrumb() {
   }
 }
 
+function normalizeTopicKey(text) {
+  const normalized = text
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/^(?:the|a|an)\s+/, "");
+
+  return normalized || text.trim().toLowerCase();
+}
+
 function getCachedResponse(topic, action) {
-  return responseCache.get(topic)?.get(action);
+  return responseCache.get(normalizeTopicKey(topic))?.get(action);
 }
 
 function cacheResponse(topic, action, data) {
-  if (!responseCache.has(topic)) {
-    responseCache.set(topic, new Map());
+  const cacheKey = normalizeTopicKey(topic);
+  if (!responseCache.has(cacheKey)) {
+    responseCache.set(cacheKey, new Map());
   }
-  responseCache.get(topic).set(action, data);
+  responseCache.get(cacheKey).set(action, data);
+}
+
+function playResultTransition() {
+  resultElement.classList.remove("result-enter");
+  requestAnimationFrame(() => resultElement.classList.add("result-enter"));
+}
+
+function appendInlineMarkdown(element, text) {
+  const tokenPattern = /(`[^`]*`|\*\*[^*]+?\*\*|__[^_]+?__|\*[^*\n]+?\*|_[^_\n]+?_)/g;
+  let cursor = 0;
+
+  for (const match of text.matchAll(tokenPattern)) {
+    element.append(document.createTextNode(text.slice(cursor, match.index)));
+    const token = match[0];
+    const content = token.slice(token.startsWith("**") || token.startsWith("__") ? 2 : 1, token.startsWith("**") || token.startsWith("__") ? -2 : -1);
+    const inlineElement = document.createElement(
+      token.startsWith("`") ? "code" : token.startsWith("*") || token.startsWith("_") ? (token.startsWith("**") || token.startsWith("__") ? "strong" : "em") : "span",
+    );
+    inlineElement.textContent = content;
+    element.append(inlineElement);
+    cursor = match.index + token.length;
+  }
+
+  element.append(document.createTextNode(text.slice(cursor)));
+}
+
+function createMarkdownFragment(markdown) {
+  const fragment = document.createDocumentFragment();
+  const lines = markdown.replace(/\r\n/g, "\n").split("\n");
+  let index = 0;
+
+  while (index < lines.length) {
+    const line = lines[index];
+    if (!line.trim()) {
+      index += 1;
+      continue;
+    }
+
+    if (line.startsWith("```")) {
+      const codeLines = [];
+      index += 1;
+      while (index < lines.length && !lines[index].startsWith("```")) {
+        codeLines.push(lines[index]);
+        index += 1;
+      }
+      if (index < lines.length) index += 1;
+      const pre = document.createElement("pre");
+      const code = document.createElement("code");
+      code.textContent = codeLines.join("\n");
+      pre.append(code);
+      fragment.append(pre);
+      continue;
+    }
+
+    const heading = line.match(/^(#{1,3})\s+(.+)$/);
+    if (heading) {
+      const element = document.createElement(`h${heading[1].length}`);
+      appendInlineMarkdown(element, heading[2]);
+      fragment.append(element);
+      index += 1;
+      continue;
+    }
+
+    const listItem = line.match(/^(\s*)([-*+]|\d+\.)\s+(.+)$/);
+    if (listItem) {
+      const isOrdered = /\d+\./.test(listItem[2]);
+      const list = document.createElement(isOrdered ? "ol" : "ul");
+      while (index < lines.length) {
+        const item = lines[index].match(/^(\s*)([-*+]|\d+\.)\s+(.+)$/);
+        if (!item || /\d+\./.test(item[2]) !== isOrdered) break;
+        const listEntry = document.createElement("li");
+        appendInlineMarkdown(listEntry, item[3]);
+        list.append(listEntry);
+        index += 1;
+      }
+      fragment.append(list);
+      continue;
+    }
+
+    const paragraphLines = [];
+    while (
+      index < lines.length &&
+      lines[index].trim() &&
+      !lines[index].startsWith("```") &&
+      !/^(#{1,3})\s+/.test(lines[index]) &&
+      !/^(\s*)([-*+]|\d+\.)\s+/.test(lines[index])
+    ) {
+      paragraphLines.push(lines[index].trim());
+      index += 1;
+    }
+    const paragraph = document.createElement("p");
+    appendInlineMarkdown(paragraph, paragraphLines.join(" "));
+    fragment.append(paragraph);
+  }
+
+  return fragment;
+}
+
+function renderMarkdown(container, markdown) {
+  container.replaceChildren();
+  container.append(createMarkdownFragment(markdown));
 }
 
 function renderTextResult(text) {
-  resultElement.replaceChildren();
-  resultElement.textContent = text;
+  resultElement.className = "markdown-content";
+  renderMarkdown(resultElement, text);
+  playResultTransition();
+}
+
+function friendlyErrorMessage(error) {
+  if (error instanceof BackendRequestError) {
+    if (error.status === 401 || error.status === 403) {
+      return "Backend configuration needs attention.";
+    }
+    if (error.status === 429) {
+      return "The AI service is temporarily unavailable.";
+    }
+    return "Something went wrong on the server. Please try again.";
+  }
+
+  // Fetch rejects for connection failures, including when the local FastAPI
+  // server is stopped or cannot be reached from the extension.
+  return "Prism backend isn't running.";
 }
 
 function renderPrerequisiteLesson(concept, explanation) {
   resultElement.replaceChildren();
+  resultElement.className = "";
   const lesson = document.createElement("article");
   const title = document.createElement("h3");
   const explanationSection = document.createElement("section");
   const explanationHeading = document.createElement("strong");
-  const explanationCopy = document.createElement("p");
+  const explanationCopy = document.createElement("div");
   const importanceSection = document.createElement("section");
   const importanceHeading = document.createElement("strong");
   const importanceCopy = document.createElement("p");
@@ -101,8 +256,8 @@ function renderPrerequisiteLesson(concept, explanation) {
   explanationSection.className = "lesson-section";
   explanationHeading.className = "lesson-heading";
   explanationHeading.textContent = "Short explanation";
-  explanationCopy.className = "lesson-copy";
-  explanationCopy.textContent = explanation;
+  explanationCopy.className = "lesson-copy markdown-content";
+  renderMarkdown(explanationCopy, explanation);
   importanceSection.className = "lesson-section";
   importanceHeading.className = "lesson-heading";
   importanceHeading.textContent = "Why it matters before the original topic";
@@ -114,11 +269,16 @@ function renderPrerequisiteLesson(concept, explanation) {
   importanceSection.append(importanceHeading, importanceCopy);
   lesson.append(title, explanationSection, importanceSection);
   resultElement.append(lesson);
+  playResultTransition();
 }
 
 function renderLearningPath(concepts) {
   resultElement.replaceChildren();
+  resultElement.className = "";
+  const introduction = document.createElement("p");
   const list = document.createElement("ol");
+  introduction.className = "learning-path-intro";
+  introduction.textContent = "Before this, understand...";
   list.className = "learning-path";
 
   concepts.forEach((concept) => {
@@ -137,12 +297,105 @@ function renderLearningPath(concepts) {
     list.append(item);
   });
 
-  resultElement.append(list);
+  resultElement.append(introduction, list);
+  playResultTransition();
+}
+
+function parseQuiz(markdown) {
+  const questions = [];
+  let currentQuestion = null;
+  let section = "question";
+
+  for (const line of markdown.split("\n")) {
+    const questionMatch = line.match(
+      /^\s*(?:#{1,6}\s*)?(?:\*\*)?(?:question|q)\s*(?:\d+)?\s*[:.)-]?(?:\*\*)?\s*(.*)$/i,
+    );
+    const numberedQuestion = line.match(/^\s*\d+[.)]\s+(.+\?)\s*$/);
+    const answerMatch = line.match(
+      /^\s*(?:[-*]\s*)?(?:\*\*)?answer(?:\s*\d+)?\s*[:.)-]?(?:\*\*)?\s*(.*)$/i,
+    );
+
+    if (questionMatch || numberedQuestion) {
+      if (currentQuestion) questions.push(currentQuestion);
+      currentQuestion = {
+        question: [questionMatch ? questionMatch[1] : numberedQuestion[1]],
+        answer: [],
+      };
+      section = "question";
+      continue;
+    }
+
+    if (answerMatch && currentQuestion) {
+      currentQuestion.answer.push(answerMatch[1]);
+      section = "answer";
+      continue;
+    }
+
+    if (currentQuestion) {
+      currentQuestion[section].push(line);
+    }
+  }
+
+  if (currentQuestion) questions.push(currentQuestion);
+  return questions.filter((item) => item.question.join("\n").trim());
+}
+
+function renderQuiz(markdown) {
+  const questions = parseQuiz(markdown);
+  if (!questions.length) {
+    renderTextResult(markdown);
+    return;
+  }
+
+  resultElement.replaceChildren();
+  resultElement.className = "quiz-list";
+
+  questions.forEach((item, index) => {
+    const card = document.createElement("article");
+    const label = document.createElement("span");
+    const question = document.createElement("div");
+    const revealButton = document.createElement("button");
+    const answer = document.createElement("div");
+    const answerId = `quiz-answer-${index}`;
+    const answerMarkdown = item.answer.join("\n").trim();
+
+    card.className = "quiz-card";
+    label.className = "quiz-label";
+    label.textContent = `Question ${index + 1}`;
+    question.className = "quiz-question markdown-content";
+    renderMarkdown(question, item.question.join("\n").trim());
+    revealButton.className = "reveal-answer";
+    revealButton.type = "button";
+    revealButton.textContent = "Reveal Answer";
+    revealButton.setAttribute("aria-expanded", "false");
+    revealButton.setAttribute("aria-controls", answerId);
+    answer.id = answerId;
+    answer.className = "quiz-answer markdown-content";
+    answer.hidden = true;
+    renderMarkdown(
+      answer,
+      answerMarkdown || "No answer was included in this quiz response.",
+    );
+    revealButton.addEventListener("click", () => {
+      const isHidden = answer.hidden;
+      answer.hidden = !isHidden;
+      revealButton.textContent = isHidden ? "Hide Answer" : "Reveal Answer";
+      revealButton.setAttribute("aria-expanded", String(isHidden));
+    });
+
+    card.append(label, question, revealButton, answer);
+    resultElement.append(card);
+  });
+  playResultTransition();
 }
 
 function renderResult(action, data) {
   if (action === "learning-path") {
     renderLearningPath(data.concepts);
+    return;
+  }
+  if (action === "quiz") {
+    renderQuiz(data.explanation);
     return;
   }
   renderTextResult(data.explanation);
@@ -160,13 +413,13 @@ async function requestAction(action, topic) {
   });
 
   if (!response.ok) {
-    throw new Error(`The backend returned ${response.status}.`);
+    throw new BackendRequestError(response.status);
   }
   return response.json();
 }
 
 function requestKey(topic, action) {
-  return `${topic}\u0000${action}`;
+  return `${normalizeTopicKey(topic)}\u0000${action}`;
 }
 
 function getOrRequestActionData(action, topic) {
@@ -193,6 +446,9 @@ function getOrRequestActionData(action, topic) {
 async function activateAction(action) {
   activeAction = action;
   updateTabs();
+  if (pendingRequestCount > 0) {
+    updateLoadingText(action);
+  }
 
   if (!selectedText) {
     return;
@@ -208,7 +464,7 @@ async function activateAction(action) {
   }
 
   renderTextResult("");
-  beginRequest();
+  beginRequest(action);
 
   try {
     const data = await getOrRequestActionData(action, topic);
@@ -216,11 +472,9 @@ async function activateAction(action) {
       renderResult(action, data);
     }
   } catch (error) {
-    console.warn(`Prism could not complete the ${action} request.`, error);
+    console.warn(`Prism could not complete the ${action} request.`);
     if (activeAction === action && selectedText === topic) {
-      renderTextResult(
-        "Prism can't reach its local backend right now. Start the Prism backend and try again.",
-      );
+      renderTextResult(friendlyErrorMessage(error));
     }
   } finally {
     // Always clear the request state, even if the user changed tabs while the
@@ -258,15 +512,13 @@ async function selectPrerequisite(concept) {
       renderPrerequisiteLesson(concept, data.explanation);
     }
   } catch (error) {
-    console.warn("Prism could not explain this prerequisite.", error);
+    console.warn("Prism could not explain this prerequisite.");
     if (
       activeAction === "learning-path" &&
       selectedText === topic &&
       selectedPrerequisite?.id === concept.id
     ) {
-      renderTextResult(
-        "Prism can't reach its local backend right now. Start the Prism backend and try again.",
-      );
+      renderTextResult(friendlyErrorMessage(error));
     }
   } finally {
     finishRequest();
