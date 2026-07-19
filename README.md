@@ -1,136 +1,276 @@
-# explain-the-internet
+# Prism
 
+> **Learn concepts in the right order.**
 
-> **An AI-powered learning layer for the web.**
+Prism is an AI-powered Chrome extension that transforms passive reading into active learning. Instead of simply explaining highlighted text, Prism identifies prerequisite concepts, generates quizzes, provides examples, and guides users through ideas in the order they should be learned.
 
-Prism transforms any webpage into an adaptive learning experience. Instead of simply summarizing content, it helps users understand concepts through personalized explanations, prerequisite learning paths, quizzes, examples, and interactive learning modes.
-
-Built for the **OpenAI Build Week 2026 Hackathon**.
-
----
-
-## ✨ Vision
-
-The web contains an incredible amount of knowledge, but it assumes readers already understand the concepts being discussed.
-
-Prism bridges this gap by acting as an intelligent educational companion. Highlight any concept on a webpage, and Prism helps you learn it at your own level instead of simply giving a one-size-fits-all explanation.
+Whether you're reading a research paper, documentation, blog post, or online article, Prism helps you build understanding step by step—without leaving the page.
 
 ---
 
-## 🚀 Planned Features
+## ✨ Why Prism?
 
-- 📖 Explain selected text
-- 🧒 Explain Like I'm 5 (ELI5)
-- 🌳 Interactive Learning Paths
-- 🧠 Quiz Generation
-- 💡 Real-world Examples
-- 🎯 Challenge Mode
-- 📝 Personalized Learning History
-- 🔍 Browser Extension for learning anywhere on the web
+Modern AI assistants are excellent at answering questions.
+
+But they often assume you already understand the foundations.
+
+For example, if you ask about **Transformers**, you'll likely receive an explanation involving **Attention**, **Embeddings**, and **Vectors**—concepts you may not know yet.
+
+Prism bridges this gap by helping users learn prerequisite concepts before returning to the original topic. Instead of overwhelming learners with information, it builds understanding progressively.
+
+---
+
+## 🚀 Features
+
+- 📖 **Explain** – Clear, structured explanations with examples.
+- 🧒 **ELI5** – Beginner-friendly explanations using simple language.
+- 🧠 **Quiz** – Interactive conceptual quizzes with answer explanations.
+- 💡 **Examples** – Everyday, technical, and real-world examples.
+- 🌱 **Learning Path** – Explore prerequisite concepts recursively.
+- 🧭 **Breadcrumb Navigation** – Easily return to previously explored concepts.
+- 📝 **Markdown Rendering** – Cleanly formatted AI responses.
+- ⚡ **Smart Caching** – Avoid repeated API calls for previously explored concepts.
+- 🎨 **Modern UI** – A clean, responsive interface designed for focused learning.
+
+---
+
+## 🖼️ Screenshots
+
+> Add screenshots here before submission.
+
+### Explain
+
+<!-- Screenshot -->
+
+### Quiz
+
+<!-- Screenshot -->
+
+### Learning Path
+
+<!-- Screenshot -->
+
+---
+
+## 🧩 How It Works
+
+1. Highlight any text on a webpage.
+2. Right-click and choose **Explain with Prism**.
+3. Select one of the learning modes:
+   - Explain
+   - ELI5
+   - Quiz
+   - Examples
+   - Learning Path
+4. If you're missing prerequisite knowledge, explore concepts recursively using the Learning Path.
+5. Return to previous topics using breadcrumb navigation.
+
+---
+
+## 🌱 Recursive Learning Path
+
+Prism's key feature is its recursive Learning Path.
+
+Instead of only explaining a concept, Prism identifies the foundational ideas required to understand it.
+
+Example:
+
+```
+Transformer
+    ↓
+Word Embeddings
+    ↓
+Vectors
+    ↓
+Linear Algebra
+```
+
+Users can continue exploring prerequisites before returning to the original topic, creating a guided learning experience rather than a one-time explanation.
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-Browser Extension
-        │
-        ▼
- FastAPI Backend
-        │
-        ▼
- Learning Engine
-        │
-        ▼
- OpenAI GPT-5.6
+User
+   │
+   ▼
+Highlight Text
+   │
+   ▼
+Chrome Extension
+   │
+   ▼
+FastAPI Backend
+   │
+   ▼
+OpenAI Responses API
+   │
+   ▼
+Structured Learning Content
+   │
+   ▼
+Interactive Popup UI
 ```
 
 ---
 
 ## 🛠️ Tech Stack
 
-### Backend
-- FastAPI
-- Python
-- OpenAI SDK
-- Pydantic
-
 ### Frontend
-- Chrome Extension (Manifest V3)
-- React (planned)
+
+- HTML
+- CSS
+- JavaScript
+- Chrome Extensions API (Manifest V3)
+
+### Backend
+
+- Python
+- FastAPI
+- AsyncOpenAI
 
 ### AI
-- GPT-5.6
-- Codex
+
+- OpenAI Responses API
+- GPT-4.1 Mini
+
+### Development Tools
+
+- Git
+- GitHub
+- OpenAI Codex
 
 ---
 
 ## 📂 Project Structure
 
 ```
-prism/
+Prism/
 │
 ├── backend/
 │   ├── routes/
 │   ├── services/
 │   ├── models.py
-│   └── main.py
+│   ├── main.py
+│   └── requirements.txt
 │
 ├── extension/
+│   ├── popup/
+│   ├── background.js
+│   ├── content.js
+│   └── manifest.json
 │
-├── DEVLOG.md
-├── README.md
-└── LICENSE
+└── README.md
 ```
 
 ---
 
-## 🚧 Current Progress
+## ⚙️ Installation
 
-### ✅ Completed
+### Clone the repository
 
-- Modular FastAPI backend
-- Health endpoint
-- Explanation endpoint
-- ELI5 endpoint
-- Quiz endpoint
-- Examples endpoint
-- Structured Learning Path endpoint
-- Local placeholder AI responses
-- OpenAI service abstraction
+```bash
+git clone https://github.com/reenu-supreeta/explain-the-internet.git
+cd explain-the-internet
+```
 
-### 🔄 In Progress
+### Backend
 
-- Chrome Extension
-- Browser integration
-- Interactive learning interface
+```bash
+cd backend
 
-### 📅 Planned
+python -m venv venv
+```
 
-- Knowledge Graph
-- Personalized Learning Memory
-- Adaptive learning recommendations
-- GPT-5.6 integration
-- Interactive frontend
+Activate the virtual environment.
+
+**Windows**
+
+```bash
+venv\Scripts\activate
+```
+
+**macOS/Linux**
+
+```bash
+source venv/bin/activate
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Create a `.env` file and add your OpenAI API key:
+
+```env
+OPENAI_API_KEY=your_api_key_here
+```
+
+Run the backend:
+
+```bash
+uvicorn main:app --reload
+```
 
 ---
 
-## 🎯 Why Prism?
+### Chrome Extension
 
-Most AI tools answer questions.
+1. Open Chrome.
+2. Navigate to `chrome://extensions`.
+3. Enable **Developer Mode**.
+4. Click **Load unpacked**.
+5. Select the `extension` folder.
 
-Prism teaches concepts.
-
-Instead of replacing learning, it supports it by helping learners build understanding one concept at a time.
+You're ready to start learning!
 
 ---
 
-## 👩‍💻 Development
+## 🎯 Built for OpenAI Build Week
 
-Prism is being built using **Codex** as an engineering collaborator throughout the OpenAI Build Week Hackathon. Development progress is documented in `DEVLOG.md`.
+Prism was created for **OpenAI Build Week** using **OpenAI Codex** as a collaborative development assistant.
+
+Codex assisted with:
+
+- FastAPI backend development
+- Chrome extension implementation
+- UI refinement
+- Prompt engineering
+- Recursive Learning Path
+- Markdown rendering
+- Debugging
+- Documentation
+
+The overall product idea, learning experience, architecture, and feature decisions were designed and iterated collaboratively throughout development.
+
+---
+
+## 🔮 Future Work
+
+- Personalized learning profiles
+- Concept mastery tracking
+- Knowledge graph visualization
+- Spaced repetition for revision
+- Support for PDFs and research papers
 
 ---
 
 ## 📄 License
 
-This project is released under the MIT License.
+This project is licensed under the MIT License.
+
+---
+
+## 💙 Acknowledgements
+
+Built with:
+
+- OpenAI Responses API
+- FastAPI
+- Chrome Extensions API
+- OpenAI Codex
+
+Special thanks to OpenAI Build Week for inspiring the project.
