@@ -24,6 +24,14 @@ For example, if you ask about **Transformers**, you'll likely receive an explana
 
 Prism bridges this gap by helping users learn prerequisite concepts before returning to the original topic. Instead of overwhelming learners with information, it builds understanding progressively.
 
+| Traditional AI | Prism |
+|----------------|--------|
+| Explains concepts | Explains concepts |
+| Answers questions | Answers questions |
+| Assumes prerequisite knowledge | Identifies prerequisite knowledge |
+| One-off responses | Guided recursive learning |
+| Passive reading | Active learning |
+
 ---
 
 ## 🚀 Features
@@ -89,12 +97,15 @@ Example:
 ```
 Transformer
     ↓
+Attention
+    ↓
 Word Embeddings
     ↓
 Vectors
     ↓
 Linear Algebra
 ```
+Each prerequisite can itself be explored, allowing learners to recursively build understanding from the foundations upward.
 
 Users can continue exploring prerequisites before returning to the original topic, creating a guided learning experience rather than a one-time explanation.
 
@@ -118,10 +129,10 @@ FastAPI Backend
 OpenAI Responses API
    │
    ▼
-Structured Learning Content
+Educational Content
    │
    ▼
-Interactive Popup UI
+Interactive Popup
 ```
 
 ---
@@ -255,17 +266,17 @@ Codex assisted with:
 - Debugging
 - Documentation
 
-The overall product idea, learning experience, architecture, and feature decisions were designed and iterated collaboratively throughout development.
+The product vision, learning experience, architecture, and final implementation decisions remained under developer direction, with Codex serving as a collaborative development assistant.
 
 ---
 
 ## 🔮 Future Work
 
 - Personalized learning profiles
-- Concept mastery tracking
+- Spaced repetition and revision
 - Knowledge graph visualization
-- Spaced repetition for revision
-- Support for PDFs and research papers
+- PDF and research paper support
+- Learning analytics
 
 ---
 
