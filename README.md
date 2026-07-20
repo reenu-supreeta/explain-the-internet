@@ -270,8 +270,10 @@ The product vision, learning experience, architecture, and final implementation 
 
 ---
 
-## 📽️ Demo Link
-https://youtu.be/LyTEGe7Ho1c 
+## 📽️ Demo
+
+🎥 **Watch the demo:** https://youtu.be/LyTEGe7Ho1c
+
 
 ## 🔮 Future Work
 
