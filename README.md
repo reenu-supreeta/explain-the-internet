@@ -42,7 +42,7 @@ Prism bridges this gap by helping users learn prerequisite concepts before retur
 
 ## 🖼️ Screenshots
 
-### Explian
+### Explain
 
 <img width="266" height="366" alt="image" src="https://github.com/user-attachments/assets/03c4f5a0-d2bc-4d4d-90c6-514aa1e94e2b" />
 
