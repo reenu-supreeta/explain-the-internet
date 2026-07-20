@@ -8,7 +8,7 @@
 
 > **Learn concepts in the right order.**
 
-Prism is an AI-powered Chrome extension that transforms passive reading into active learning. Instead of simply explaining highlighted text, Prism identifies prerequisite concepts, generates quizzes, provides examples, and guides users through ideas in the order they should be learned.
+Prism is an AI-powered Chrome extension powered by the OpenAI Responses API and GPT-5.6 that transforms passive reading into active learning. Instead of simply explaining highlighted text, Prism identifies prerequisite concepts, generates quizzes, provides examples, and guides users through ideas in the order they should be learned.
 
 Whether you're reading a research paper, documentation, blog post, or online article, Prism helps you build understanding step by step—without leaving the page.
 
