@@ -36,19 +36,24 @@ Prism bridges this gap by helping users learn prerequisite concepts before retur
 
 ## 🖼️ Screenshots
 
-> Add screenshots here before submission.
+### Explian
 
-### Explain
+<img width="266" height="366" alt="image" src="https://github.com/user-attachments/assets/03c4f5a0-d2bc-4d4d-90c6-514aa1e94e2b" />
 
-<!-- Screenshot -->
+### ELI5 (Explain Like I'm 5)
+
+<img width="269" height="368" alt="image" src="https://github.com/user-attachments/assets/d1b37e01-098e-4052-9800-3d62e86807f1" />
 
 ### Quiz
 
-<!-- Screenshot -->
+<img width="261" height="359" alt="image" src="https://github.com/user-attachments/assets/caaa0131-87d1-4cce-9f9d-d2086a764321" />
+<img width="260" height="363" alt="image" src="https://github.com/user-attachments/assets/73b51d41-c68e-4f1f-ab07-3cf276b4cc47" />
 
 ### Learning Path
 
-<!-- Screenshot -->
+<img width="269" height="362" alt="image" src="https://github.com/user-attachments/assets/56a1f9fe-61c9-4c84-a8d4-f3ed45a0be38" />
+<img width="263" height="408" alt="image" src="https://github.com/user-attachments/assets/fa006718-e109-4cb8-b0f2-b346972f330e" />
+
 
 ---
 
