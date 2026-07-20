@@ -155,7 +155,7 @@ Interactive Popup
 ### AI
 
 - OpenAI Responses API
-- GPT-4.1 Mini
+- GPT-5.6
 
 ### Development Tools
 
