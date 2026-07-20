@@ -1,5 +1,11 @@
 # Prism
 
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688)
+![Chrome Extension](https://img.shields.io/badge/Chrome-Manifest_V3-green)
+![OpenAI](https://img.shields.io/badge/OpenAI-Responses_API-black)
+![License](https://img.shields.io/badge/License-MIT-blue)
+
 > **Learn concepts in the right order.**
 
 Prism is an AI-powered Chrome extension that transforms passive reading into active learning. Instead of simply explaining highlighted text, Prism identifies prerequisite concepts, generates quizzes, provides examples, and guides users through ideas in the order they should be learned.
